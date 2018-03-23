@@ -1,6 +1,6 @@
 package me.leig.photowallandroid.image
 
-import me.leig.photowallandroid.Constant
+import me.leig.photowallandroid.comm.Constant
 import java.util.*
 
 /**

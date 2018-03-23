@@ -7,7 +7,7 @@ import kotlinx.android.synthetic.main.fragment_image.view.*
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
-import me.leig.photowallandroid.Constant
+import me.leig.photowallandroid.comm.Constant
 import me.leig.photowallandroid.R
 import me.leig.photowallandroid.comm.BaseFragment
 import me.leig.photowallandroid.comm.downloadFile

@@ -10,7 +10,7 @@ import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import org.json.JSONObject
-import me.leig.photowallandroid.Constant
+import me.leig.photowallandroid.comm.Constant
 import me.leig.photowallandroid.R
 import me.leig.photowallandroid.comm.BaseFragment
 import me.leig.photowallandroid.comm.genericType
