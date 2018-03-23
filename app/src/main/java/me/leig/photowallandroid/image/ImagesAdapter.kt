@@ -8,7 +8,6 @@ import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_image.view.*
 import me.leig.photowallandroid.Constant
 import me.leig.photowallandroid.R
-import photowall.leig.me.myapplication.R
 import me.leig.photowallandroid.comm.BaseAdapter
 import me.leig.photowallandroid.comm.ViewHolder
 

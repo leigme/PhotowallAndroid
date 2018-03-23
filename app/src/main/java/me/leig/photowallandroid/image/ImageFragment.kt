@@ -9,7 +9,6 @@ import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import me.leig.photowallandroid.Constant
 import me.leig.photowallandroid.R
-import photowall.leig.me.myapplication.R
 import me.leig.photowallandroid.comm.BaseFragment
 import me.leig.photowallandroid.comm.downloadFile
 import retrofit2.Call

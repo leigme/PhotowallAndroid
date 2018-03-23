@@ -12,7 +12,6 @@ import okio.Buffer
 import org.json.JSONObject
 import me.leig.photowallandroid.Constant
 import me.leig.photowallandroid.R
-import photowall.leig.me.myapplication.R
 import me.leig.photowallandroid.comm.BaseFragment
 import me.leig.photowallandroid.comm.genericType
 import me.leig.photowallandroid.comm.stringToDate
