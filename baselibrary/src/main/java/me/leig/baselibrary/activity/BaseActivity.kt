@@ -1,5 +1,6 @@
 package me.leig.baselibrary.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -12,6 +13,8 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import me.leig.baselibrary.comm.BaseInterface
+import me.leig.baselibrary.comm.Constant
+import me.leig.baselibrary.fragment.BaseFragment
 
 /**
  * 主程序入口基类
@@ -21,28 +24,75 @@ import me.leig.baselibrary.comm.BaseInterface
  *
  */
 
-abstract class BaseActivity: AppCompatActivity(), BaseInterface {
+abstract class BaseActivity constructor(protected val title: String = BaseActivity::class.java.name): AppCompatActivity(), BaseInterface {
 
-    private val toast = Toast.makeText(applicationContext, "", Toast.LENGTH_SHORT)
+    private lateinit var toast: Toast
 
     private var requestCode = 9009
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(getLayoutId())
-        initData()
-        initView()
-        initListener()
+    override fun initBaseData() {
+        print("initBaseData")
     }
 
-    abstract fun getLayoutId(): Int
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContentView(getRootView())
+
+        toast = Toast.makeText(applicationContext, "", Toast.LENGTH_SHORT)
+
+        initBaseData()
+
+        initView()
+
+        initData()
+
+        initEvent()
+    }
+
+    abstract fun getRootView(): Int
+
+    abstract fun getFragmentId(): Int
+
+    override fun initData() {
+        print("initData")
+    }
+
+    override fun initView() {
+        print("initView")
+    }
+
+    override fun initEvent() {
+        print("initEvent")
+    }
+
+    protected fun startActivity(clazz: Class<out Activity>) {
+        val intent = Intent(this, clazz)
+        startActivity(intent)
+    }
+
+    protected fun addFragment(baseFragment: BaseFragment) {
+        if (0 >= getFragmentId()) {
+            return
+        }
+        var bundle = baseFragment.arguments
+        if (null == bundle) {
+            bundle = Bundle()
+        }
+        bundle.putInt(Constant.FRAGMENT_ID, getFragmentId())
+        baseFragment.arguments = bundle
+        val ft = fragmentManager.beginTransaction()
+        ft.add(getFragmentId(), baseFragment)
+        ft.addToBackStack(null)
+        ft.commit()
+    }
 
     /**
      * 简单日志打印
      *
      */
     fun log(msg: String) {
-        Log.d(getClassTag(), msg)
+        Log.d(title, msg)
     }
 
     /**

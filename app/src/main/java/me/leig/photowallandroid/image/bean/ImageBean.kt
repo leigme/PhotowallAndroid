@@ -1,4 +1,4 @@
-package me.leig.photowallandroid.image
+package me.leig.photowallandroid.image.bean
 
 import me.leig.photowallandroid.comm.Constant
 import java.util.*
@@ -24,9 +24,9 @@ data class ImageBean(
         var mimeType: String? = null,
         var longitude: String? = null,
         var latitude: String? = null,
-        var deleteFlag: Int = Constant.DELETEFLAG_NORMAL,
+        var deleteFlag: Int = Constant.DELETE_FLAG_NORMAL,
         var startTime: Date? = null,
         var endTime: Date? = null,
-        var limitNum: Int = Constant.DEFAULT_PAGENUM,
+        var limitNum: Int = Constant.DEFAULT_PAGE_NUM,
         var pageNum: Int = 1
 )

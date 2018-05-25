@@ -19,19 +19,20 @@ import me.leig.baselibrary.comm.BaseInterface
  *
  */
 
-abstract class BaseFragment: Fragment(), View.OnTouchListener, View.OnClickListener, BaseInterface {
+abstract class BaseFragment constructor(protected val title: String = BaseFragment::class.java.name): Fragment(), View.OnTouchListener, View.OnClickListener, BaseInterface {
 
-    private val toast = Toast.makeText(activity, "", Toast.LENGTH_SHORT)
+    private lateinit var toast: Toast
 
-    lateinit var mView: View
+    protected lateinit var mView: View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
         mView = inflater.inflate(getLayoutId(), container, false)
         mView.setBackgroundColor(Color.WHITE)
         mView.setOnTouchListener(this)
+        toast = Toast.makeText(activity, "", Toast.LENGTH_SHORT)
         initData()
         initView()
-        initListener()
+        initEvent()
         return mView
     }
 
@@ -41,12 +42,28 @@ abstract class BaseFragment: Fragment(), View.OnTouchListener, View.OnClickListe
         return true
     }
 
+    override fun initBaseData() {
+        log("initBaseData")
+    }
+
+    override fun initView() {
+        log("initView")
+    }
+
+    override fun initData() {
+        log("initData")
+    }
+
+    override fun initEvent() {
+        log("initEvent")
+    }
+
     /**
      * 简单日志打印
      *
      */
     fun log(msg: String) {
-        Log.d(getClassTag(), msg)
+        Log.d(title, msg)
     }
 
     /**

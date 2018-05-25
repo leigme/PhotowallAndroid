@@ -6,15 +6,17 @@ import android.util.Log
 import android.view.View
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_images.view.*
+import me.leig.baselibrary.fragment.BaseFragment
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import org.json.JSONObject
 import me.leig.photowallandroid.comm.Constant
 import me.leig.photowallandroid.R
-import me.leig.photowallandroid.comm.BaseFragment
 import me.leig.photowallandroid.comm.genericType
 import me.leig.photowallandroid.comm.stringToDate
+import me.leig.photowallandroid.image.bean.ImageBean
+import me.leig.photowallandroid.image.bean.RequestImage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,7 +32,7 @@ import java.util.*
  *
  */
 
-class ImagesFragment: BaseFragment(R.layout.fragment_images, "照片") {
+class ImagesFragment: BaseFragment(ImageFragment::class.java.name) {
 
     private var year = 0
     private var month = 0
@@ -45,14 +47,14 @@ class ImagesFragment: BaseFragment(R.layout.fragment_images, "照片") {
     private var pageNo = 1
     private var pageSize = 20
 
-    override fun initBaseData() {
-        print("initBaseData")
+    override fun getLayoutId(): Int {
+        return R.layout.fragment_images
     }
 
     override fun initView() {
 
-        baseView.tv_starttime.text = "开始时间: ${stringTime(year, month, day)}"
-        baseView.tv_endtime.text = "结束时间: ${stringTime(year, month, day)}"
+        mView.tv_starttime.text = "开始时间: ${stringTime(year, month, day)}"
+        mView.tv_endtime.text = "结束时间: ${stringTime(year, month, day)}"
     }
 
     override fun initData() {
@@ -80,14 +82,17 @@ class ImagesFragment: BaseFragment(R.layout.fragment_images, "照片") {
         // 获取日
         day = cal.get(Calendar.DATE)
 
-        val retrofit = Retrofit.Builder().baseUrl(Constant.SERVICEADDRESS).client(client).build()
+        val retrofit = Retrofit.Builder().baseUrl(Constant.SERVICE_ADDRESS).client(client).build()
 
         val service = retrofit.create(ImagesService::class.java)
 
+        val requestImage = RequestImage()
+
         val imageBean = ImageBean()
+
         imageBean.pageNum = pageNo
         imageBean.limitNum = pageSize
-        imageBean.deleteFlag = Constant.DELETEFLAG_NORMAL
+        imageBean.deleteFlag = Constant.DELETE_FLAG_NORMAL
 
         if ("" != startTime) {
             imageBean.startTime = stringToDate(startTime)
@@ -97,7 +102,7 @@ class ImagesFragment: BaseFragment(R.layout.fragment_images, "照片") {
             imageBean.endTime = stringToDate(endTime)
         }
 
-        val requestBody = RequestBody.create(MediaType.parse("application/json"), Gson().toJson(imageBean))
+        val requestBody = RequestBody.create(MediaType.parse("application/json"), Gson().toJson(requestImage))
 
         val call = service.getImages(requestBody)
 
@@ -117,9 +122,9 @@ class ImagesFragment: BaseFragment(R.layout.fragment_images, "照片") {
                 val images: List<ImageBean> = Gson().fromJson(fileInfos, type)
 
                 val iA = ImagesAdapter(activity, R.layout.item_image, images)
-                baseView.rv_images.layoutManager = GridLayoutManager(activity, 3)
-                baseView.rv_images.adapter = iA
-                baseView.rv_images.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                mView.rv_images.layoutManager = GridLayoutManager(activity, 3)
+                mView.rv_images.adapter = iA
+                mView.rv_images.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
 
                     }
@@ -128,19 +133,19 @@ class ImagesFragment: BaseFragment(R.layout.fragment_images, "照片") {
         })
     }
 
-    override fun initListener() {
-        baseView.tv_starttime.setOnClickListener(this)
-        baseView.tv_endtime.setOnClickListener(this)
-        baseView.btn_search.setOnClickListener(this)
-        baseView.dp_date.init(year, month, day) { view, year, month, day ->
+    override fun initEvent() {
+        mView.tv_starttime.setOnClickListener(this)
+        mView.tv_endtime.setOnClickListener(this)
+        mView.btn_search.setOnClickListener(this)
+        mView.dp_date.init(year, month, day) { view, year, month, day ->
             view.visibility = View.GONE
 
             if (starttimeFlag && !endtimeFlag) {
                 startTime = stringTime(year, month + 1, day)
-                baseView.tv_starttime.text = "开始时间: $startTime"
+                mView.tv_starttime.text = "开始时间: $startTime"
             } else if (!starttimeFlag && endtimeFlag) {
                 endTime = stringTime(year, month + 1, day)
-                baseView.tv_endtime.text = "结束时间: $endTime"
+                mView.tv_endtime.text = "结束时间: $endTime"
             }
         }
     }
@@ -150,13 +155,13 @@ class ImagesFragment: BaseFragment(R.layout.fragment_images, "照片") {
             R.id.tv_starttime -> {
                 starttimeFlag = true
                 endtimeFlag = false
-                baseView.dp_date.visibility = View.VISIBLE
+                mView.dp_date.visibility = View.VISIBLE
                 print("点击了开始时间")
             }
             R.id.tv_endtime -> {
                 starttimeFlag = false
                 endtimeFlag = true
-                baseView.dp_date.visibility = View.VISIBLE
+                mView.dp_date.visibility = View.VISIBLE
                 print("点击了结束时间")
             }
             R.id.btn_search -> {

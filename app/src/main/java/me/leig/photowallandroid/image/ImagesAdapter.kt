@@ -10,6 +10,7 @@ import me.leig.photowallandroid.comm.Constant
 import me.leig.photowallandroid.R
 import me.leig.photowallandroid.comm.BaseAdapter
 import me.leig.photowallandroid.comm.ViewHolder
+import me.leig.photowallandroid.image.bean.ImageBean
 
 /**
  *
@@ -23,7 +24,7 @@ import me.leig.photowallandroid.comm.ViewHolder
 class ImagesAdapter(private val context: Context, layoutId: Int, datas: List<ImageBean>): BaseAdapter<ImageBean>(context, layoutId, datas) {
 
     override fun convert(holder: ViewHolder, t: ImageBean) {
-        Glide.with(context).load(Constant.SERVICEADDRESS + t.saveUrl).into(holder.itemView.iv_image)
+        Glide.with(context).load(Constant.SERVICE_ADDRESS + t.saveUrl).into(holder.itemView.iv_image)
         holder.setOnClickListener(R.id.iv_image, View.OnClickListener {
             when(it.id) {
                 R.id.iv_image -> {

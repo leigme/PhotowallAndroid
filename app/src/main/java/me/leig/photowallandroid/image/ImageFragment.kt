@@ -4,12 +4,12 @@ import android.os.Environment
 import android.view.View
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_image.view.*
+import me.leig.baselibrary.fragment.BaseFragment
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import me.leig.photowallandroid.comm.Constant
 import me.leig.photowallandroid.R
-import me.leig.photowallandroid.comm.BaseFragment
 import me.leig.photowallandroid.comm.downloadFile
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,9 +25,13 @@ import retrofit2.Retrofit
  *
  */
  
-class ImageFragment: BaseFragment(R.layout.fragment_image, "图片详情") {
+class ImageFragment: BaseFragment("图片详情") {
 
     private var imageUrl = ""
+
+    override fun getLayoutId(): Int {
+        return R.layout.fragment_image
+    }
 
     override fun initData() {
         imageUrl = arguments.getString("URL")
@@ -41,7 +45,7 @@ class ImageFragment: BaseFragment(R.layout.fragment_image, "图片详情") {
             val file = File(imageFile)
 
             if (file.exists()) {
-                Glide.with(activity).load(file).into(baseView.iv_image)
+                Glide.with(activity).load(file).into(mView.iv_image)
             } else {
                 val fileDir = file.parentFile
                 if (!fileDir.exists()) {
@@ -68,7 +72,7 @@ class ImageFragment: BaseFragment(R.layout.fragment_image, "图片详情") {
                     chain.proceed(request)
                 }.addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build()
 
-                val retrofit = Retrofit.Builder().baseUrl(Constant.SERVICEADDRESS).client(client).build()
+                val retrofit = Retrofit.Builder().baseUrl(Constant.SERVICE_ADDRESS).client(client).build()
 
                 val service = retrofit.create(ImagesService::class.java)
 
@@ -84,7 +88,7 @@ class ImageFragment: BaseFragment(R.layout.fragment_image, "图片详情") {
                         if (response.isSuccessful) {
                             val result = downloadFile(response.body()!!, imageFile)
                             if (result) {
-                                Glide.with(activity).load(file).into(baseView.iv_image)
+                                Glide.with(activity).load(file).into(mView.iv_image)
                             }
                         }
                     }

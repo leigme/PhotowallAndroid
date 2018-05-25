@@ -16,7 +16,7 @@ import retrofit2.http.*
 
 interface ImagesService {
 
-    @POST("api/v1/file/")
+    @POST("v1/f/finds/")
     fun getImages(@Body body: RequestBody): Call<ResponseBody>
 
     @Streaming
