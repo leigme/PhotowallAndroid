@@ -1,7 +1,6 @@
 package me.leig.photowallandroid.image
 
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import com.google.gson.Gson
@@ -15,6 +14,7 @@ import me.leig.photowallandroid.comm.Constant
 import me.leig.photowallandroid.R
 import me.leig.photowallandroid.comm.genericType
 import me.leig.photowallandroid.comm.stringToDate
+import me.leig.photowallandroid.image.bean.FileBean
 import me.leig.photowallandroid.image.bean.ImageBean
 import me.leig.photowallandroid.image.bean.RequestImage
 import retrofit2.Call
@@ -44,8 +44,9 @@ class ImagesFragment: BaseFragment(ImageFragment::class.java.name) {
     private var starttimeFlag = false
     private var endtimeFlag = false
 
-    private var pageNo = 1
-    private var pageSize = 20
+    private lateinit var iA: ImagesAdapter
+
+    private var dataList = mutableListOf<FileBean>()
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_images
@@ -55,82 +56,27 @@ class ImagesFragment: BaseFragment(ImageFragment::class.java.name) {
 
         mView.tv_starttime.text = "开始时间: ${stringTime(year, month, day)}"
         mView.tv_endtime.text = "结束时间: ${stringTime(year, month, day)}"
+
+        iA = ImagesAdapter(activity, R.layout.item_image, dataList)
+
+        val gridLayoutManager = GridLayoutManager(activity, 3)
+        mView.rv_images.layoutManager = gridLayoutManager
+        mView.rv_images.adapter = iA
+        mView.rv_images.addOnScrollListener(object : EndLessOnScrollListener(gridLayoutManager) {
+
+            override fun onLoadMore(currentPage: Int) {
+                loadMoreData(currentPage)
+                iA.refresh(dataList)
+            }
+        })
+
+        iA.refresh(dataList)
     }
 
     override fun initData() {
 
-        val client = OkHttpClient().newBuilder().addInterceptor { chain ->
-            val request = chain.request().newBuilder()
-                    .addHeader("creater_oid", "123411") //这里就是添加一个请求头
-                    .build()
-            // 不依赖logging，用这三行也能打印出请求体
-            val buffer = Buffer()
-            request.body()!!.writeTo(buffer)
-            Log.d(title, "intercept: " + buffer.readUtf8())
+        loadMoreData()
 
-            chain.proceed(request)
-        }.addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build()
-
-        val cal = Calendar.getInstance()
-
-        cal.time = Date()
-
-        // 获取年份
-        year = cal.get(Calendar.YEAR)
-        // 获取月份
-        month = cal.get(Calendar.MONTH) + 1
-        // 获取日
-        day = cal.get(Calendar.DATE)
-
-        val retrofit = Retrofit.Builder().baseUrl(Constant.SERVICE_ADDRESS).client(client).build()
-
-        val service = retrofit.create(ImagesService::class.java)
-
-        val requestImage = RequestImage()
-
-        val imageBean = ImageBean()
-
-        imageBean.pageNum = pageNo
-        imageBean.limitNum = pageSize
-        imageBean.deleteFlag = Constant.DELETE_FLAG_NORMAL
-
-        if ("" != startTime) {
-            imageBean.startTime = stringToDate(startTime)
-        }
-
-        if ("" != endTime) {
-            imageBean.endTime = stringToDate(endTime)
-        }
-
-        val requestBody = RequestBody.create(MediaType.parse("application/json"), Gson().toJson(requestImage))
-
-        val call = service.getImages(requestBody)
-
-        call.enqueue(object : Callback<ResponseBody> {
-
-            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
-                print("失败了..." + t!!.message)
-            }
-
-            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>) {
-                val result = response.body()!!.string()
-                val jsonObj = JSONObject(result)
-                val fileInfos = jsonObj.get("fileInfos").toString()
-
-                val type = genericType<List<ImageBean>>()
-
-                val images: List<ImageBean> = Gson().fromJson(fileInfos, type)
-
-                val iA = ImagesAdapter(activity, R.layout.item_image, images)
-                mView.rv_images.layoutManager = GridLayoutManager(activity, 3)
-                mView.rv_images.adapter = iA
-                mView.rv_images.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-
-                    }
-                })
-            }
-        })
     }
 
     override fun initEvent() {
@@ -187,5 +133,73 @@ class ImagesFragment: BaseFragment(ImageFragment::class.java.name) {
         return "$year-$m-$d"
     }
 
+    private fun loadMoreData(page: Int = 1, limit: Int = Constant.DEFAULT_PAGE_NUM) {
+        val client = OkHttpClient().newBuilder().addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                    .addHeader("creater_oid", "123411") //这里就是添加一个请求头
+                    .build()
+            // 不依赖logging，用这三行也能打印出请求体
+            val buffer = Buffer()
+            request.body()!!.writeTo(buffer)
+            Log.d(title, "intercept: " + buffer.readUtf8())
+
+            chain.proceed(request)
+        }.addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build()
+
+        val cal = Calendar.getInstance()
+
+        cal.time = Date()
+
+        // 获取年份
+        year = cal.get(Calendar.YEAR)
+        // 获取月份
+        month = cal.get(Calendar.MONTH) + 1
+        // 获取日
+        day = cal.get(Calendar.DATE)
+
+        val retrofit = Retrofit.Builder().baseUrl(Constant.SERVICE_ADDRESS).client(client).build()
+
+        val service = retrofit.create(ImagesService::class.java)
+
+        val requestImage = RequestImage()
+
+        requestImage.page = page
+        requestImage.limit = limit
+
+        val imageBean = ImageBean()
+
+        imageBean.deleteFlag = Constant.DELETE_FLAG_NORMAL
+
+        if ("" != startTime) {
+            imageBean.startTime = stringToDate(startTime)
+        }
+
+        if ("" != endTime) {
+            imageBean.endTime = stringToDate(endTime)
+        }
+
+        val requestBody = RequestBody.create(MediaType.parse("application/json"), Gson().toJson(requestImage))
+
+        val call = service.getImages(requestBody)
+
+        call.enqueue(object : Callback<ResponseBody> {
+
+            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
+                log("失败了...${t!!.message}")
+            }
+
+            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>) {
+                val result = response.body()!!.string()
+                val jsonObj = JSONObject(result)
+                val files = jsonObj.get("files").toString()
+
+                val type = genericType<List<FileBean>>()
+
+                val images: List<FileBean> = Gson().fromJson(files, type)
+
+                dataList.addAll(images)
+            }
+        })
+    }
 
 }

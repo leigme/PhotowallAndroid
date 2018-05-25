@@ -13,18 +13,18 @@ import android.view.ViewGroup
  *
  */
 
-abstract class BaseAdapter<in T> constructor(private val context: Context, val layout: Int, private val datas: List<T>): RecyclerView.Adapter<ViewHolder>() {
+abstract class BaseAdapter<in T> constructor(private val context: Context, val layout: Int, private val dataList: List<T>): RecyclerView.Adapter<ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(context, layout, parent)
     }
 
     override fun getItemCount(): Int {
-        return datas.size
+        return dataList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        convert(holder, datas[position])
+        convert(holder, dataList[position])
     }
 
     abstract fun convert(holder: ViewHolder, t: T)
