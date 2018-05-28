@@ -1,6 +1,8 @@
 package me.leig.photowallandroid
 
 import android.util.Log
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.bitmap_recycle.LruBitmapPool
 import me.leig.baselibrary.application.BaseApplication
 
 /**

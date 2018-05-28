@@ -11,6 +11,10 @@ import me.leig.photowallandroid.R
 import me.leig.photowallandroid.comm.BaseAdapter
 import me.leig.photowallandroid.comm.ViewHolder
 import me.leig.photowallandroid.image.bean.FileBean
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+
+
 
 /**
  *
@@ -25,10 +29,18 @@ class ImagesAdapter(private val context: Context, layoutId: Int, private var dat
 
     override fun convert(holder: ViewHolder, t: FileBean) {
         holder.itemView.tv_title.text = t.title
+
+        val options = RequestOptions()
+                //禁用内存缓存
+                .skipMemoryCache(true)
+                //硬盘缓存功能
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+
         Glide.with(context)
                 .load(Constant.SERVICE_ADDRESS + t.saveurl)
-                .thumbnail(0.2f)
+                .apply(options)
                 .into(holder.itemView.iv_image)
+
         holder.setOnClickListener(R.id.iv_image, View.OnClickListener {
             when(it.id) {
                 R.id.iv_image -> {
