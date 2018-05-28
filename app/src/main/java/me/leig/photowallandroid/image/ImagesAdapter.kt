@@ -11,7 +11,6 @@ import me.leig.photowallandroid.R
 import me.leig.photowallandroid.comm.BaseAdapter
 import me.leig.photowallandroid.comm.ViewHolder
 import me.leig.photowallandroid.image.bean.FileBean
-import me.leig.photowallandroid.image.bean.ImageBean
 
 /**
  *
@@ -26,7 +25,10 @@ class ImagesAdapter(private val context: Context, layoutId: Int, private var dat
 
     override fun convert(holder: ViewHolder, t: FileBean) {
         holder.itemView.tv_title.text = t.title
-        Glide.with(context).load(Constant.SERVICE_ADDRESS + t.saveurl).into(holder.itemView.iv_image)
+        Glide.with(context)
+                .load(Constant.SERVICE_ADDRESS + t.saveurl)
+                .thumbnail(0.2f)
+                .into(holder.itemView.iv_image)
         holder.setOnClickListener(R.id.iv_image, View.OnClickListener {
             when(it.id) {
                 R.id.iv_image -> {

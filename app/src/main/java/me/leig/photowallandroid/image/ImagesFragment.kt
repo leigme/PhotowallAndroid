@@ -1,8 +1,10 @@
 package me.leig.photowallandroid.image
 
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_images.view.*
 import me.leig.baselibrary.fragment.BaseFragment
@@ -63,6 +65,14 @@ class ImagesFragment: BaseFragment(ImageFragment::class.java.name) {
         mView.rv_images.layoutManager = gridLayoutManager
         mView.rv_images.adapter = iA
         mView.rv_images.addOnScrollListener(object : EndLessOnScrollListener(gridLayoutManager) {
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+                if (RecyclerView.SCROLL_STATE_IDLE == newState) {
+                    Glide.with(activity).resumeRequests()
+                } else {
+                    Glide.with(activity).pauseRequests()
+                }
+            }
 
             override fun onLoadMore(currentPage: Int) {
                 loadMoreData(currentPage)

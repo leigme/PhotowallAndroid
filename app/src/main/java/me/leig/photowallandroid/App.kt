@@ -1,24 +1,27 @@
 package me.leig.photowallandroid
 
-import android.app.Application
 import android.util.Log
+import me.leig.baselibrary.application.BaseApplication
 
 /**
+ * 启动入口
  *
- *
- * @authori
+ * @author leig
  * @version 20171231
  * @date 2018/3/18
  *
  */
 
-class App: Application() {
+class App: BaseApplication() {
 
     private val tag = App::class.java.name
 
-    override fun onCreate() {
-        super.onCreate()
-        Log.i(tag, "starting")
+    override fun initData() {
+        Log.i(tag, "初始化数据")
+    }
+
+    override fun initServer() {
+        Log.i(tag, "初始化服务")
     }
 
 }
