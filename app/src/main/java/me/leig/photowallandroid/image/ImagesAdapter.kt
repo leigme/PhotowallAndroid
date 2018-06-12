@@ -32,9 +32,9 @@ class ImagesAdapter(private val context: Context, layoutId: Int, private var dat
 
         val options = RequestOptions()
                 //禁用内存缓存
-                .skipMemoryCache(true)
+                .skipMemoryCache(false)
                 //硬盘缓存功能
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
 
         Glide.with(context)
                 .load(Constant.SERVICE_ADDRESS + t.saveurl)

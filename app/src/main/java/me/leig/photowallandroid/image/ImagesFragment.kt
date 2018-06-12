@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_images.view.*
 import me.leig.baselibrary.fragment.BaseFragment
@@ -206,6 +208,16 @@ class ImagesFragment: BaseFragment(ImageFragment::class.java.name) {
                 val type = genericType<List<FileBean>>()
 
                 val images: List<FileBean> = Gson().fromJson(files, type)
+
+                val options = RequestOptions()
+                        //禁用内存缓存
+                        .skipMemoryCache(false)
+                        //硬盘缓存功能
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+
+                for (image in images) {
+                    Glide.with(activity).load(image.saveurl).apply(options).preload(30, 30)
+                }
 
                 dataList.addAll(images)
             }
